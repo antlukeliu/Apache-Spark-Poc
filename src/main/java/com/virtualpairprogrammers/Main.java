@@ -9,13 +9,14 @@ import org.apache.spark.api.java.JavaSparkContext;
 import java.util.ArrayList;
 import java.util.List;
 
+//Resilient Distributed Dataset (RDD)
 public class Main {
     public static void main(String [] args) {
-        List<Double> inputData = new ArrayList<>();
-        inputData.add(25.5);
-        inputData.add(90.32);
-        inputData.add(12.499999);
-        inputData.add(28.28);
+        List<Integer> inputData = new ArrayList<>();
+        inputData.add(25);
+        inputData.add(90);
+        inputData.add(12);
+        inputData.add(28);
 
         Logger.getLogger("org.apache").setLevel(Level.WARN);
 
@@ -24,11 +25,23 @@ public class Main {
         JavaSparkContext sc = new JavaSparkContext(conf);
 
         //Wrapper JavaRDD is implemented in Scala
-        JavaRDD<Double> myRdd = sc.parallelize(inputData);
+        JavaRDD<Integer> myRdd = sc.parallelize(inputData);
 
-        Double result = myRdd.reduce( (value1, value2) -> value1 + value2 );
+        Integer result = myRdd.reduce( (value1, value2) -> {
+            return value1 + value2;
+        });
+
+        JavaRDD<Double> sqrtRdd = myRdd.map(Math::sqrt);
+
+        sqrtRdd.collect().forEach(System.out::println);
 
         System.out.println(result);
+
+        //how many elements is in RDD
+
+        JavaRDD<Long> singleIntegerRdd = sqrtRdd.map( value -> 1L);
+        Long count = singleIntegerRdd.reduce((value1, value2) -> value1 + value2);
+        System.out.println(count);
 
         sc.close();
     }
