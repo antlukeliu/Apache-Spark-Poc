@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import scala.Tuple2;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,24 +26,9 @@ public class Main {
         JavaSparkContext sc = new JavaSparkContext(conf);
 
         //Wrapper JavaRDD is implemented in Scala
-        JavaRDD<Integer> myRdd = sc.parallelize(inputData);
-
-        Integer result = myRdd.reduce( (value1, value2) -> {
-            return value1 + value2;
-        });
-
-        JavaRDD<Double> sqrtRdd = myRdd.map(Math::sqrt);
-
-        sqrtRdd.collect().forEach(System.out::println);
-
-        System.out.println(result);
-
-        //how many elements is in RDD
-
-        JavaRDD<Long> singleIntegerRdd = sqrtRdd.map( value -> 1L);
-        Long count = singleIntegerRdd.reduce((value1, value2) -> value1 + value2);
-        System.out.println(count);
-
+        JavaRDD<Integer> originalIntegers = sc.parallelize(inputData);
+        JavaRDD<Tuple2<Integer, Double>> sqrtRdd = originalIntegers.map(value -> new Tuple2<>(value, Math.sqrt(value)));
+        
         sc.close();
     }
 }
