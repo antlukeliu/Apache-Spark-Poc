@@ -15,6 +15,7 @@ import java.util.List;
 public class Main {
     @SuppressWarnings("resource")
     public static void main(String [] args) {
+        System.setProperty("hadoop.home.dir", "c:/hadoop");
         //Tuple
 //        List<Integer> inputData = new ArrayList<>();
 //        inputData.add(25);
@@ -58,10 +59,10 @@ public class Main {
         sumRDD.foreach( tuple -> System.out.println(tuple._1 + " has " + tuple._2 + " instances"));
 
         //Optimal code
-//        sc.parallelize(inputData)
-//                .mapToPair(rawValue -> new Tuple2<>(rawValue.split(":")[0] , 1L  ))
-//                .reduceByKey((value1, value2) -> value1 + value2)
-//                .foreach(tuple -> System.out.println(tuple._1 + " has " + tuple._2 + " instances"));
+        sc.parallelize(inputData)
+                .mapToPair(rawValue -> new Tuple2<>(rawValue.split(":")[0] , 1L  ))
+                .reduceByKey((value1, value2) -> value1 + value2)
+                .foreach(tuple -> System.out.println(tuple._1 + " has " + tuple._2 + " instances"));
         sc.close();
     }
 }
